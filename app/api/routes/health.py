@@ -4,7 +4,10 @@ from app.config.logger import app_logger
 from app.config.settings import settings
 from app.schemas.health import HealthResponse
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/health",
+    tags=["Health"],
+)
 
 
 @router.get(

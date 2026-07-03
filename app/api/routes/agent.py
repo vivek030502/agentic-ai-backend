@@ -4,13 +4,16 @@ from app.agent.core import AgentCore
 from app.schemas.agent import AgentRequest, AgentResponse
 from app.agent.state import AgentStatus
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/agent",
+    tags=["Agent"],
+)
 
 agent = AgentCore()
 
 
 @router.post(
-    "",
+    "/run",
     response_model=AgentResponse
 )
 def run_agent(request: AgentRequest):

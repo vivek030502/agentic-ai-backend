@@ -1,6 +1,9 @@
 from app.config.settings import settings
 from app.integrations.base.http_client import BaseHttpClient
-from app.integrations.github.models import CreateRepositoryRequest
+from app.integrations.github.models import (
+    CreateRepositoryRequest,
+    CreateBranchRequest
+)
 
 
 class GitHubClient(BaseHttpClient):
@@ -53,6 +56,43 @@ class GitHubClient(BaseHttpClient):
 
         response = self.post(
             endpoint="/user/repos",
+            json_data=payload
+        )
+
+        return response.json()
+
+
+    def create_branch(
+        self,
+        request: CreateBranchRequest
+    ) -> dict:
+        """
+        Creates a new GitHub branch.
+
+        Returns:
+            Raw GitHub API response.
+        """
+
+        # Get authenticated user
+        user = self.get_authenticated_user()
+
+        owner = user["login"]
+        repo = request.repository_name
+
+        # Get SHA of source branch
+        ref_response = self.get(
+            endpoint=f"/repos/{owner}/{repo}/git/ref/heads/{request.source_branch}"
+        )
+
+        sha = ref_response.json()["object"]["sha"]
+
+        payload = {
+            "ref": f"refs/heads/{request.branch_name}",
+            "sha": sha
+        }
+
+        response = self.post(
+            endpoint=f"/repos/{owner}/{repo}/git/refs",
             json_data=payload
         )
 

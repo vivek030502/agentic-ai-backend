@@ -34,8 +34,17 @@ class Settings(BaseSettings):
     LLM_MODEL: str = "gemini/gemini-2.5-flash"
     GEMINI_API_KEY: str
 
+    # RAG
+    CHROMA_DB_PATH: str = "./workspace/chromadb"
+    EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
+
     # Logging
     LOG_LEVEL: str = "INFO"
+
+    WORKSPACE_DIRECTORY: str = "./workspace"
+
+    # Local workspace root
+    WORKSPACE_ROOT: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
