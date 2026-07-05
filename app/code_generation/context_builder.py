@@ -1,5 +1,5 @@
 from app.code_generation.jira_analyzer import JiraAnalyzer
-from app.code_generation.repository_context import RepositoryContext
+from app.code_generation.repository_context import RepositoryAnalysisContext
 from app.code_generation.models import (
     CodeGenerationContext,
     ContextDocument,
@@ -103,7 +103,17 @@ class ContextBuilder:
         search = self.rag.search(
             SearchRequest(
                 collection_name=repository,
-                query=analysis.summary,
+                # query=analysis.summary,
+                query=f"""
+                    Jira Summary:
+                    {analysis.summary}
+
+                    Description:
+                    {analysis.description}
+
+                    Repository:
+                    {repository}
+                    """,
                 top_k=5,
             )
         )
@@ -127,6 +137,8 @@ class ContextBuilder:
             repository=repository,
 
             branch=branch,
+
+            repository_path=workspace.local_path,
 
             jira_key=jira_key,
 

@@ -1,6 +1,6 @@
-from app.analysis.repository.models import (
-    ProjectDirectory,
-    ProjectFile,
+from app.repository.models import (
+    RepositoryDirectory,
+    RepositoryFile,
 )
 
 
@@ -14,8 +14,8 @@ class RepositoryStructureBuilder:
 
     def build(
         self,
-        directories: list[ProjectDirectory],
-        files: list[ProjectFile],
+        directories: list[RepositoryDirectory],
+        files: list[RepositoryFile],
     ) -> str:
         """
         Build repository tree.

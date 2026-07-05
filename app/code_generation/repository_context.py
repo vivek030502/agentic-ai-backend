@@ -3,7 +3,7 @@ from app.rag.models import SearchRequest
 from app.rag.service import RAGService
 
 
-class RepositoryContext:
+class RepositoryAnalysisContext:
     """
     Retrieves the most relevant repository files
     from ChromaDB.

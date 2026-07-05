@@ -118,8 +118,8 @@ class GitWorkspaceClient:
     def commit(
         self,
         repository_path: str,
-        message: str
-    ) -> None:
+        message: str,
+    ) -> bool:
 
         repo = self.open_repository(
             repository_path
@@ -127,16 +127,36 @@ class GitWorkspaceClient:
 
         repo.git.add(A=True)
 
+        if not repo.is_dirty(untracked_files=True):
+
+            app_logger.info(
+                "No changes to commit."
+            )
+
+            return False
+
         repo.index.commit(message)
+
+        app_logger.info(
+            "Commit created."
+        )
+
+        return True
 
     def push(
         self,
         repository_path: str,
-        branch: str
+        branch: str,
     ) -> None:
 
         repo = self.open_repository(
             repository_path
         )
 
-        repo.remotes.origin.push(branch)
+        app_logger.info(
+            f"Pushing branch {branch}"
+        )
+
+        repo.remotes.origin.push(
+            refspec=f"{branch}:{branch}"
+        )

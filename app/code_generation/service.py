@@ -16,6 +16,8 @@ from app.code_generation.generator import (
 from app.code_generation.parser import (
     CodeParser,
 )
+from app.repository.file_writer import RepositoryFileWriter
+from app.repository.git_repository import GitRepository
 
 
 class CodeGenerationService:
@@ -49,6 +51,10 @@ class CodeGenerationService:
         self.generator = CodeGenerator()
 
         self.parser = CodeParser()
+
+        self.writer = RepositoryFileWriter()
+
+        self.git = GitRepository()
 
     def generate_code(
         self,
@@ -113,6 +119,17 @@ class CodeGenerationService:
             llm_response
         )
 
+        written_files = self.writer.write(
+            repository_path=context.repository_path,
+            response=parsed,
+        )
+
+        committed = self.git.commit_and_push(
+            repository_path=context.repository_path,
+            branch=request.branch,
+            commit_message=f"{request.jira_key}: AI generated implementation",
+        )
+
         app_logger.info(
             f"{len(parsed.files)} files generated."
         )
@@ -135,5 +152,9 @@ class CodeGenerationService:
 
             files=parsed.files,
 
-            message="Code generated successfully.",
+            message=(
+                "Code generated, committed and pushed successfully."
+                if committed
+                else "Code generated successfully. No new changes to commit."
+            ),
         )

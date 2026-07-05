@@ -1,6 +1,9 @@
 from pathlib import Path
 
-from app.analysis.repository.models import ProjectFile
+from app.repository.models import (
+    RepositoryDetection,
+    RepositoryFile,
+)
 
 
 class RepositoryDetector:
@@ -18,8 +21,8 @@ class RepositoryDetector:
     def detect(
         self,
         repository_path: str,
-        files: list[ProjectFile],
-    ) -> dict:
+        files: list[RepositoryFile],
+    ) -> RepositoryDetection:
         """
         Detect repository metadata.
 
@@ -35,13 +38,13 @@ class RepositoryDetector:
 
         root = Path(repository_path)
 
-        return {
-            "language": self._detect_language(files),
-            "framework": self._detect_framework(root),
-            "package_manager": self._detect_package_manager(root),
-            "build_system": self._detect_build_system(root),
-            "entry_point": self._detect_entry_point(root),
-        }
+        return RepositoryDetection(
+            language=self._detect_language(files),
+            framework=self._detect_framework(root),
+            package_manager=self._detect_package_manager(root),
+            build_system=self._detect_build_system(root),
+            entry_point=self._detect_entry_point(root),
+        )
 
     # ------------------------------------------------------------------
     # Language Detection
@@ -49,7 +52,7 @@ class RepositoryDetector:
 
     def _detect_language(
         self,
-        files: list[ProjectFile],
+        files: list[RepositoryFile],
     ) -> str | None:
 
         extensions = {

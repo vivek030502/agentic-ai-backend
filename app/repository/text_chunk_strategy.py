@@ -43,7 +43,7 @@ class TextChunkStrategy(ChunkStrategy):
                     repository=repository,
                     branch=branch,
                     file_path=file.path,
-                    language=detect_language(file.extension),
+                    language=self.detect_language(file.extension),
                     chunk_index=chunk_index,
                     total_chunks=0,
                     content=chunk_content,
@@ -69,7 +69,7 @@ class TextChunkStrategy(ChunkStrategy):
 
         return chunks
 
-    def detect_language(extension: str) -> str:
+    def detect_language(self, extension: str) -> str:
 
         mapping = {
             ".py": "python",

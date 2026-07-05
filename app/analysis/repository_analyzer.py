@@ -1,8 +1,8 @@
 from app.analysis.repository.analyzer import (
     RepositoryAnalyzer,
 )
-from app.analysis.repository.models import (
-    RepositoryContext,
+from app.repository.models import (
+    RepositoryAnalysisContext,
 )
 from app.repository.detector import RepositoryDetector
 from app.repository.dependency_parser import (
@@ -52,14 +52,15 @@ class RepositoryAnalysisService:
         )
 
         detection = self.detector.detect(
-            repository_path
+            repository_path,
+            files,
         )
 
         dependency_list = self.dependencies.parse(
             repository_path
         )
 
-        context = RepositoryContext(
+        context = RepositoryAnalysisContext(
             repository_name=repository_path.split("/")[-1],
             repository_path=repository_path,
             language=detection.language,

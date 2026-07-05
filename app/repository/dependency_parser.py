@@ -3,7 +3,7 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from app.analysis.repository.models import Dependency
+from app.repository.models import Dependency
 
 
 class DependencyParser:

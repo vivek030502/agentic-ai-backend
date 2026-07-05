@@ -1,55 +1,73 @@
+# 
+
+
 from litellm import completion
 
-from app.ai.models import AIResponse, TokenUsage
+from app.ai.models import AIResponse
+from app.ai.models import TokenUsage
+
 from app.ai.providers.base_provider import BaseProvider
+
 from app.config.logger import app_logger
 from app.config.settings import settings
 
 
 class GeminiProvider(BaseProvider):
-    """
-    Gemini LLM provider implementation using LiteLLM.
-    """
 
     def generate(
         self,
         system_prompt: str,
-        user_prompt: str
+        user_prompt: str,
+        response_format=None,
     ) -> AIResponse:
 
-        app_logger.info("Calling Gemini API...")
+        app_logger.info("Calling Gemini")
 
-        try:
+        kwargs = {
 
-            response = completion(
-                model=settings.LLM_MODEL,
-                api_key=settings.GEMINI_API_KEY,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system_prompt
-                    },
-                    {
-                        "role": "user",
-                        "content": user_prompt
-                    }
-                ]
-            )
+            "model": settings.LLM_MODEL,
 
-            return AIResponse(
-                content=response.choices[0].message.content,
-                provider="gemini",
-                model=response.model,
-                usage=TokenUsage(
-                    prompt_tokens=response.usage.prompt_tokens,
-                    completion_tokens=response.usage.completion_tokens,
-                    total_tokens=response.usage.total_tokens
-                ),
-                finish_reason=response.choices[0].finish_reason
-            )
+            "api_key": settings.GEMINI_API_KEY,
 
-        except Exception as ex:
+            "messages": [
 
-            app_logger.exception(ex)
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
 
-            raise
+                {
+                    "role": "user",
+                    "content": user_prompt,
+                },
+
+            ],
+
+        }
+
+        if response_format is not None:
+            kwargs["response_format"] = response_format
+
+        response = completion(**kwargs)
+
+        return AIResponse(
+
+            content=response.choices[0].message.content,
+
+            provider="gemini",
+
+            model=response.model,
+
+            usage=TokenUsage(
+
+                prompt_tokens=response.usage.prompt_tokens,
+
+                completion_tokens=response.usage.completion_tokens,
+
+                total_tokens=response.usage.total_tokens,
+
+            ),
+
+            finish_reason=response.choices[0].finish_reason,
+
+        )

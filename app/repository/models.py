@@ -4,46 +4,102 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
+# ==========================================================
+# Dependency
+# ==========================================================
+
+class Dependency(BaseModel):
+    """
+    Represents a project dependency.
+    """
+
+    name: str
+    version: str | None = None
+
+
+# ==========================================================
+# Repository Directory
+# ==========================================================
+
+class RepositoryDirectory(BaseModel):
+    """
+    Represents a directory inside the repository.
+    """
+
+    path: str
+
+
+# ==========================================================
+# Repository File
+# ==========================================================
+
 class RepositoryFile(BaseModel):
     """
     Represents a file discovered inside a repository.
     """
 
-    path: str = Field(
-        ...,
-        description="Relative file path."
-    )
+    path: str
 
-    name: str = Field(
-        ...,
-        description="File name."
-    )
+    name: str
 
-    extension: str = Field(
-        ...,
-        description="File extension."
-    )
+    extension: str
 
-    language: str = Field(
-        default="text",
-        description="Detected programming language."
-    )
+    language: str = "text"
 
-    size: int = Field(
-        default=0,
-        description="File size in bytes."
-    )
+    size: int = 0
 
-    content: str = Field(
-        default="",
-        description="Complete file content."
-    )
+    content: str = ""
 
+
+# ==========================================================
+# Repository Detection
+# ==========================================================
+
+class RepositoryDetection(BaseModel):
+
+    language: str | None = None
+
+    framework: str | None = None
+
+    package_manager: str | None = None
+
+    build_system: str | None = None
+
+    entry_point: str | None = None
+
+
+# ==========================================================
+# Repository Analysis Context
+# ==========================================================
+
+class RepositoryAnalysisContext(BaseModel):
+
+    repository_name: str
+
+    repository_path: str
+
+    language: str | None = None
+
+    framework: str | None = None
+
+    package_manager: str | None = None
+
+    build_system: str | None = None
+
+    entry_point: str |None = None
+
+    dependencies: list[Dependency] = Field(default_factory=list)
+
+    directories: list[RepositoryDirectory] = Field(default_factory=list)
+
+    files: list[RepositoryFile] = Field(default_factory=list)
+
+
+# ==========================================================
+# Repository Chunk
+# ==========================================================
 
 class RepositoryChunk(BaseModel):
-    """
-    Represents one chunk of a repository file.
-    """
 
     id: str
 
@@ -64,10 +120,11 @@ class RepositoryChunk(BaseModel):
     metadata: dict[str, Any]
 
 
+# ==========================================================
+# Repository Index Request
+# ==========================================================
+
 class RepositoryIndexRequest(BaseModel):
-    """
-    Request to index a repository.
-    """
 
     repository: str
 
@@ -76,10 +133,11 @@ class RepositoryIndexRequest(BaseModel):
     local_path: str
 
 
+# ==========================================================
+# Repository Index Response
+# ==========================================================
+
 class RepositoryIndexResponse(BaseModel):
-    """
-    Repository indexing summary.
-    """
 
     success: bool
 

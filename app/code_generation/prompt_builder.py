@@ -35,10 +35,25 @@ Repository Analysis:
 Files To Generate:
 """
 
-        for file in context.suggested_files:
-            prompt += f"\n- {file}"
+        # for file in context.suggested_files:
+        #     prompt += f"\n- {file}"
 
-        prompt += "\n\nRelevant Existing Code:\n"
+        # prompt += "\n\nRelevant Existing Code:\n"
+
+        # for document in context.rag_documents:
+
+        #     prompt += f"""
+
+        if context.suggested_files:
+
+            for file in context.suggested_files:
+                prompt += f"\n- {file}"
+
+        else:
+
+            prompt += "\nNone"
+
+        prompt += "\n\nRepository Code:\n"
 
         for document in context.rag_documents:
 
@@ -54,10 +69,15 @@ FILE : {document.file_path}
 
         prompt += """
 
-Generate complete implementation.
+Generate production-ready code.
 
-Return ONLY JSON.
+Modify ONLY the existing repository.
+
+Do not invent unrelated applications.
+
+Return the response in the enforced schema.
 
 """
 
-        return SYSTEM_PROMPT + "\n\n" + prompt
+        # return SYSTEM_PROMPT + "\n\n" + prompt
+        return prompt

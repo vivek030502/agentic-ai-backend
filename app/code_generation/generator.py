@@ -1,15 +1,15 @@
-import json
-
-from app.ai.providers.gemini_provider import GeminiProvider
+from app.ai.service import AIService
 from app.code_generation.prompt_builder import PromptBuilder
 from app.code_generation.models import (
     CodeGenerationContext,
+    CodeGenerationResponse,
 )
+from app.code_generation.prompts import SYSTEM_PROMPT
 
 
 class CodeGenerator:
     """
-    Calls Gemini
+    Calls the configured LLM
     to generate source code.
     """
 
@@ -17,20 +17,36 @@ class CodeGenerator:
 
         self.builder = PromptBuilder()
 
-        self.llm = GeminiProvider()
+        self.ai = AIService()
 
     def generate(
         self,
         context: CodeGenerationContext,
-    ) -> dict:
+    ) -> str:
 
-        prompt = self.builder.build(
+        # prompt = self.builder.build(
+        #     context
+        # )
+
+        # response = self.ai.generate(
+        #     system_prompt="",
+        #     user_prompt=prompt,
+        # )
+
+        # return response.content
+
+        user_prompt = self.builder.build(
             context
         )
 
         response = self.ai.generate(
-            system_prompt,
-            user_prompt,
+
+            system_prompt=SYSTEM_PROMPT,
+
+            user_prompt=user_prompt,
+
+            response_format=CodeGenerationResponse,
+
         )
 
-        return json.loads(response)
+        return response.content

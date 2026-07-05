@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from app.analysis.repository.models import (
-    ProjectDirectory,
-    ProjectFile,
+from app.repository.models import (
+    RepositoryDirectory,
+    RepositoryFile,
 )
 
 
@@ -57,7 +57,7 @@ class RepositoryScanner:
     def scan(
         self,
         repository_path: str,
-    ) -> tuple[list[ProjectDirectory], list[ProjectFile]]:
+    ) -> tuple[list[RepositoryDirectory], list[RepositoryFile]]:
 
         root = Path(repository_path)
 
@@ -71,8 +71,8 @@ class RepositoryScanner:
                 f"Repository path is not a directory: {repository_path}"
             )
 
-        directories: list[ProjectDirectory] = []
-        files: list[ProjectFile] = []
+        directories: list[RepositoryDirectory] = []
+        files: list[RepositoryFile] = []
 
         self._scan_directory(
             root=root,
@@ -90,8 +90,8 @@ class RepositoryScanner:
         self,
         root: Path,
         current: Path,
-        directories: list[ProjectDirectory],
-        files: list[ProjectFile],
+        directories: list[RepositoryDirectory],
+        files: list[RepositoryFile],
     ) -> None:
 
         for item in current.iterdir():
@@ -105,7 +105,7 @@ class RepositoryScanner:
             if item.is_dir():
 
                 directories.append(
-                    ProjectDirectory(
+                    RepositoryDirectory(
                         path=self._relative_path(
                             root,
                             item,
@@ -134,12 +134,11 @@ class RepositoryScanner:
                 content = ""
 
             files.append(
-                ProjectFile(
-                    path=self._relative_path(
-                        root,
-                        item,
-                    ),
+                RepositoryFile(
+                    path=self._relative_path(root, item),
+                    name=item.name,
                     extension=item.suffix.lower(),
+                    language=self._detect_language(item.suffix),
                     size=item.stat().st_size,
                     content=content,
                 )
@@ -154,3 +153,37 @@ class RepositoryScanner:
         return str(
             path.relative_to(root)
         ).replace("\\", "/")
+
+    @staticmethod
+    def _detect_language(extension: str) -> str:
+
+        mapping = {
+            ".py": "python",
+            ".java": "java",
+            ".kt": "kotlin",
+            ".js": "javascript",
+            ".ts": "typescript",
+            ".tsx": "typescript",
+            ".jsx": "javascript",
+            ".vue": "vue",
+            ".html": "html",
+            ".css": "css",
+            ".scss": "scss",
+            ".json": "json",
+            ".xml": "xml",
+            ".yaml": "yaml",
+            ".yml": "yaml",
+            ".sql": "sql",
+            ".md": "markdown",
+            ".txt": "text",
+            ".go": "go",
+            ".cs": "csharp",
+            ".php": "php",
+            ".rb": "ruby",
+            ".rs": "rust",
+            ".cpp": "cpp",
+            ".c": "c",
+            ".h": "c",
+        }
+
+        return mapping.get(extension.lower(), "text")

@@ -5,8 +5,8 @@ from app.analysis.repository.prompts import (
     SYSTEM_PROMPT,
     USER_PROMPT,
 )
-from app.analysis.repository.models import (
-    RepositoryContext,
+from app.repository.models import (
+    RepositoryAnalysisContext,
 )
 
 
@@ -15,7 +15,7 @@ class RepositoryAnalyzer:
     Uses the LLM to understand the repository.
 
     This class does NOT scan the repository.
-    It only converts RepositoryContext into an
+    It only converts RepositoryAnalysisContext into an
     architectural summary.
     """
 
@@ -25,7 +25,7 @@ class RepositoryAnalyzer:
 
     def analyze(
         self,
-        context: RepositoryContext,
+        context: RepositoryAnalysisContext,
     ) -> str:
         """
         Returns a repository architecture summary.
@@ -52,12 +52,12 @@ class RepositoryAnalyzer:
             structure="\n".join(structure),
         )
 
-        response = self.llm.chat(
+        response = self.ai.generate(
             system_prompt=SYSTEM_PROMPT,
             user_prompt=prompt,
         )
 
-        return self._parse(response)
+        return self._parse(response.content)
 
     def _parse(
         self,
